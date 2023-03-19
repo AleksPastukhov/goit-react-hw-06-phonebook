@@ -14,8 +14,3 @@ export const store = configureStore({
     filter: filterReduser,
   },
 });
-
-// const appState = {
-//   contacts: [],
-//   filter: '',
-// };
