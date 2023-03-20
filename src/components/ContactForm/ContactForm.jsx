@@ -1,7 +1,11 @@
 import { Formik, Field, ErrorMessage } from 'formik';
-import PropTypes from 'prop-types';
+import { nanoid } from 'nanoid';
 import { UserForm } from './ContactForm.styled';
 import { object, string } from 'yup';
+import { addContact } from '../../redux/contactsSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { getContacts } from '../../redux/selectors';
 
 const userSchema = object({
   name: string()
@@ -18,9 +22,34 @@ const userSchema = object({
     .required(),
 });
 
-export default function ContactForm({ onSubmit }) {
+export default function ContactForm() {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
+  const createContact = (newName, newNumber) => {
+    return {
+      id: nanoid(4),
+      name: newName,
+      number: newNumber,
+    };
+  };
+
+  const formSubmitHendler = (newName, newNumber) => {
+    for (let contact of contacts.contacts) {
+      if (contact.number === newNumber) {
+        toast.error(
+          `
+    Oops!!! this phone number ${newNumber} is already saved in your contact list under the name "${contact.name}".`
+        );
+        return;
+      }
+    }
+
+    dispatch(addContact(createContact(newName, newNumber)));
+  };
+
   const handleSubmit = (e, { resetForm }) => {
-    onSubmit(e.name, e.number);
+    formSubmitHendler(e.name, e.number);
     resetForm();
   };
 
@@ -46,7 +75,3 @@ export default function ContactForm({ onSubmit }) {
     </Formik>
   );
 }
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};

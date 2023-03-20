@@ -1,9 +1,13 @@
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { Div, Input, Span } from './Filter.styled';
+import { onChangeInput } from '../../redux/filterSlice';
+import { getFilter } from '../../redux/selectors';
 
-export default function Filter({ filter, onChange }) {
+export default function Filter() {
+  const filter = useSelector(getFilter);
+  const dispatch = useDispatch();
   const handleInput = e => {
-    onChange(e.currentTarget.value);
+    dispatch(onChangeInput(e.currentTarget.value));
   };
 
   return (
@@ -20,8 +24,3 @@ export default function Filter({ filter, onChange }) {
     </Div>
   );
 }
-
-Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
